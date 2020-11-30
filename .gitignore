@@ -1,0 +1,4 @@
+.vscode/
+.DS_Store
+trained_models/model1/**
+trained_models/model2/**
