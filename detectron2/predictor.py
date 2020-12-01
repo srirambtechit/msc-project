@@ -16,9 +16,7 @@ class VisualizationDemo(object):
           self.umpire_classifier = UmpireClassifier(cfg, instance_mode)
         elif args.classifier == 'umpire-pose-classifier':
           self.umpire_signs_classifier = UmpireSignsClassifier(cfg, instance_mode)
-
         self.cpu_device = torch.device("cpu")
-        self.debug_var = 0
 
     def _frame_from_video(self, video):
         while video.isOpened():
@@ -43,16 +41,14 @@ class VisualizationDemo(object):
           frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
           if "instances" in predictions:
             instances = predictions["instances"]
-            value = instances[ instances.pred_classes == 2].pred_classes
-            print('Pred_classes', value)
+            pred_classes_tensor = instances[ instances.pred_classes == 2].pred_classes[0]
+            print('Pred_classes', pred_classes_tensor)
             predictions = instances.to(self.cpu_device)
-            vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
+            if 2 in pred_classes_tensor:
+              vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
+              # Converts Matplotlib RGB format to OpenCV BGR format
+              vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
 
-          # Converts Matplotlib RGB format to OpenCV BGR format
-          vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
-          if self.debug_var == 5:
-            return vis_frame
-          self.debug_var += 1
           return vis_frame
 
         frame_gen = self._frame_from_video(video)
