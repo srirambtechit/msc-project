@@ -13,9 +13,9 @@ from detectron2.utils.visualizer import ColorMode, Visualizer
 class VisualizationDemo(object):
     def __init__(self, args, cfg, instance_mode=ColorMode.IMAGE):
         if args.classifier == 'umpire-classifier':
-          self.umpire_classifier = UmpireClassifier(cfg)
+          self.umpire_classifier = UmpireClassifier(cfg, instance_mode)
         elif args.classifier == 'umpire-pose-classifier':
-          self.umpire_signs_classifier = UmpireSignsClassifier(cfg)
+          self.umpire_signs_classifier = UmpireSignsClassifier(cfg, instance_mode)
 
         self.cpu_device = torch.device("cpu")
 
@@ -82,7 +82,7 @@ class UmpireClassifier(object):
     return VideoVisualizer(self.metadata, self.instance_mode)
 
 class UmpireSignsClassifier(object):
-  def __init__(self, cfg):
+  def __init__(self, cfg, instance_mode):
     self.metadata = MetadataCatalog.get(
         cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
     )
