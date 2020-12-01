@@ -27,12 +27,15 @@ Metadata(name='my_dataset_test',
       )
 ```
 
-model1-labels
+### Classifier models
+#### umpire detection classifier
+**model1-labels**
 - isumpire (0)
 - non-umpire (1)
 - umpire (2)
 
-model2-labels
+#### umpire signs detection classifier
+**model2-labels**
 - umpire-signals (0)
 - no-action (1)
 - no-ball (2)
