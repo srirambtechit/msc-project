@@ -72,7 +72,7 @@ def get_parser():
     )
     parser.add_argument(
         "--classifier",
-        defult="both",
+        default="both",
         help="umpire-classifier or umpire-signs-classifier "
         "If not given, will throw an error.",
     )
