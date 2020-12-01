@@ -55,6 +55,7 @@ class VisualizationDemo(object):
                 # vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
 
                 # only interested in frame classified as "umpire"
+                print("M1-Pred", instances.pred_classes)
                 if 2 in instances.pred_classes:
                     # print('Pred_classes', pred_classes)
                     # predictions = instances.to(self.cpu_device)
@@ -123,6 +124,7 @@ class UmpireSignsClassifier(object):
 
             # only interested in frame not classified as NO-ACTION
             # such as OUT, SIX, NO-BALL, WIDE
+            print("M2-Pred", instances.pred_classes)
             if 1 not in instances.pred_classes:
                 # print('Pred_classes', pred_classes)
                 predictions = instances.to(self.cpu_device)
