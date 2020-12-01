@@ -104,9 +104,6 @@ if __name__ == "__main__":
     else:
         m1_cfg = setup_cfg(args, 'm1')
         m2_cfg = setup_cfg(args, 'm2')
-    
-    print('m1_cfg', m1_cfg)
-    print('m2_cfg', m2_cfg)
 
     demo = VisualizationDemo(args, m1_cfg, m2_cfg)
 
