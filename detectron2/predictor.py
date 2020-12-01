@@ -44,12 +44,14 @@ class VisualizationDemo(object):
           frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
           vis_frame = None
           if "instances" in predictions:
+            instances = predictions["instances"]
+
+            # getting all frames
             predictions = instances.to(self.cpu_device)
             vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
             # Converts Matplotlib RGB format to OpenCV BGR format
             vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
 
-            # instances = predictions["instances"]
             # # only interested in frame classified as "umpire"
             # if 2 in instances.pred_classes:
             #   # print('Pred_classes', pred_classes)
