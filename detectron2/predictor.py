@@ -62,7 +62,8 @@ class VisualizationDemo(object):
                     vis_frame = self.umpire_signs_classifier.predict_and_draw(frame, video_visualizer)
                     
                     # Converts Matplotlib RGB format to OpenCV BGR format
-                    vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
+                    if vis_frame:
+                        vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
             return vis_frame
 
         frame_gen = self._frame_from_video(video)
