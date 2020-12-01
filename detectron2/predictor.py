@@ -38,18 +38,23 @@ class VisualizationDemo(object):
         Yields:
             ndarray: BGR visualizations of each video frame.
         """
+        stop_at = 5
         def process_predictions(frame, predictions):
-            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            if "instances" in predictions:
-              instances = predictions["instances"]
-              value = instances[ instances.pred_classes == 2].pred_classes
-              print('Pred_classes', vlaue)
-              predictions = instances.to(self.cpu_device)
-              vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
+          frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+          if "instances" in predictions:
+            instances = predictions["instances"]
+            value = instances[ instances.pred_classes == 2].pred_classes
+            print('Pred_classes', vlaue)
+            predictions = instances.to(self.cpu_device)
+            vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
 
-            # Converts Matplotlib RGB format to OpenCV BGR format
-            vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
+          # Converts Matplotlib RGB format to OpenCV BGR format
+          vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
+          if stop_at == 0:
             return vis_frame
+          stop_at -= 1
+
+          return vis_frame
 
         frame_gen = self._frame_from_video(video)
         for frame in frame_gen:
