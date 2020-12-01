@@ -14,9 +14,10 @@ from predictor import VisualizationDemo
 
 # constants
 WINDOW_NAME = "COCO detections"
+CLASSIFIER1 = "umpire-classifier"
+CLASSIFIER2 = "umpire-signs-classifier"
 
-
-def setup_cfg(args):
+def setup_cfg(args, classifier):
     # load config from file and command-line arguments
     cfg = get_cfg()    
     cfg.merge_from_file(args.config_file)
@@ -26,9 +27,17 @@ def setup_cfg(args):
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = args.confidence_threshold
 
     # ---- adding my train configs START -------- #
-    # cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml"))
+    cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml"))
     # cfg.DATASETS.TRAIN = ("my_dataset_train",)
-    cfg.DATASETS.TEST = ("my_dataset_val",)
+
+    if classifier == CLASSIFIER1:
+        cfg.DATASETS.TEST = ("umpire_dataset_test",)
+        cfg.MODEL.ROI_HEADS.NUM_CLASSES = 4 #your number of classes + 1
+        cfg.MODEL.WEIGHTS = '/content/model1/output/model_final.pth'
+    elif classifier == CLASSIFIER2:
+        cfg.DATASETS.TEST = ("umpire_signs_dataset_test",)
+        cfg.MODEL.ROI_HEADS.NUM_CLASSES = 7 #your number of classes + 1
+        cfg.MODEL.WEIGHTS = '/content/model2/output/model_final.pth'
 
     # cfg.DATALOADER.NUM_WORKERS = 4
     # cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml")  # Let training initialize from model zoo
@@ -41,9 +50,7 @@ def setup_cfg(args):
     cfg.SOLVER.GAMMA = 0.05
 
     cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 64
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 7 #your number of classes + 1
     # cfg.MODEL.ROI_HEADS.IOU_LABELS = [0,1,2,3,4,5,6]
-
     cfg.TEST.EVAL_PERIOD = 500
     # ---- adding my train configs END -------- #
 
@@ -53,20 +60,8 @@ def setup_cfg(args):
 
 def get_parser():
     parser = argparse.ArgumentParser(description="Detectron2 demo for builtin configs")
-    parser.add_argument(
-        "--config-file",
-        default="configs/quick_schedules/mask_rcnn_R_50_FPN_inference_acc_test.yaml",
-        metavar="FILE",
-        help="path to config file",
-    )
-    parser.add_argument("--webcam", action="store_true", help="Take inputs from webcam.")
-    parser.add_argument("--video-input", help="Path to video file.")
-    parser.add_argument(
-        "--input",
-        nargs="+",
-        help="A list of space separated input images; "
-        "or a single glob pattern such as 'directory/*.jpg'",
-    )
+    
+    parser.add_argument("--video-input", help="Path to video file.")    
     parser.add_argument(
         "--output",
         help="A file or directory to save output visualizations. "
@@ -95,43 +90,12 @@ if __name__ == "__main__":
     logger = setup_logger()
     logger.info("Arguments: " + str(args))
 
-    cfg = setup_cfg(args)
+    umpire_classifier_cfg = setup_cfg(args, CLASSIFIER1)
+    umpire_signs_classifier_cfg = setup_cfg(args, CLASSIFIER2)
 
-    demo = VisualizationDemo(cfg)
+    demo = VisualizationDemo(umpire_classifier_cfg, umpire_signs_classifier_cfg)
 
-    if args.input:
-        if len(args.input) == 1:
-            args.input = glob.glob(os.path.expanduser(args.input[0]))
-            assert args.input, "The input path(s) was not found"
-        for path in tqdm.tqdm(args.input, disable=not args.output):
-            # use PIL, to be consistent with evaluation
-            img = read_image(path, format="BGR")
-            start_time = time.time()
-            predictions, visualized_output = demo.run_on_image(img)
-            logger.info(
-                "{}: {} in {:.2f}s".format(
-                    path,
-                    "detected {} instances".format(len(predictions["instances"]))
-                    if "instances" in predictions
-                    else "finished",
-                    time.time() - start_time,
-                )
-            )
-
-            if args.output:
-                if os.path.isdir(args.output):
-                    assert os.path.isdir(args.output), args.output
-                    out_filename = os.path.join(args.output, os.path.basename(path))
-                else:
-                    assert len(args.input) == 1, "Please specify a directory with args.output"
-                    out_filename = args.output
-                visualized_output.save(out_filename)
-            else:
-                cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
-                cv2.imshow(WINDOW_NAME, visualized_output.get_image()[:, :, ::-1])
-                if cv2.waitKey(0) == 27:
-                    break  # esc to quit
-    elif args.video_input:
+    if args.video_input:
         video = cv2.VideoCapture(args.video_input)
         width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -159,7 +123,8 @@ if __name__ == "__main__":
         assert os.path.isfile(args.video_input)
         for vis_frame in tqdm.tqdm(demo.run_on_video(video), total=num_frames):
             if args.output:
-                output_file.write(vis_frame)
+                if vis_frame:
+                    output_file.write(vis_frame)
             else:
                 cv2.namedWindow(basename, cv2.WINDOW_NORMAL)
                 cv2.imshow(basename, vis_frame)
