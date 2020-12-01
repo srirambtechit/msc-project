@@ -38,8 +38,8 @@ class VisualizationDemo(object):
         Yields:
             ndarray: BGR visualizations of each video frame.
         """
-        global stop_at = 5
-        
+        global stop_at
+
         def process_predictions(frame, predictions):
           frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
           if "instances" in predictions:
@@ -51,9 +51,9 @@ class VisualizationDemo(object):
 
           # Converts Matplotlib RGB format to OpenCV BGR format
           vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
-          if stop_at == 0:
+          if stop_at == 5:
             return vis_frame
-          stop_at -= 1
+          stop_at += 1
 
           return vis_frame
 
