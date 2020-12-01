@@ -80,6 +80,8 @@ class VisualizationDemo(object):
 class UmpireClassifier(object):
     def __init__(self, cfg, instance_mode):
         assert cfg is not None, "UmpireClassifier's config cannot be None"
+        print('UC dataset', cfg.DATASETS.TEST[0])
+
         self.metadata = MetadataCatalog.get(
             cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
         )
@@ -94,6 +96,8 @@ class UmpireClassifier(object):
 class UmpireSignsClassifier(object):
     def __init__(self, cfg, instance_mode):
         assert cfg is not None, "UmpireSignsClassifier's config cannot be None"
+        print('UC dataset', cfg.DATASETS.TEST[0])
+        
         self.metadata = MetadataCatalog.get(
             cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
         )
