@@ -74,28 +74,32 @@ class VisualizationDemo(object):
             yield process_predictions(frame, self.predictor(frame))
 
 class UmpirePredictor(DefaultPredictor):
-    def __init__(self, cfg, instance_mode):
-        self.metadata = MetadataCatalog.get(
-            cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
-        )
-        self.metadata.thing_classes = ['isumpire', 'non-umpire', 'umpire' ]
-        self.metadata.thing_dataset_id_to_contiguous_id=({0: 0, 1: 1, 2: 2})
-        print(self.metadata)
-        self.cpu_device = torch.device("cpu")
-        self.instance_mode = instance_mode
-        self.predictor = DefaultPredictor(cfg)
+  def __init__(self, cfg, instance_mode):
+    self.metadata = MetadataCatalog.get(
+        cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
+    )
+    self.metadata.thing_classes = ['isumpire', 'non-umpire', 'umpire' ]
+    self.metadata.thing_dataset_id_to_contiguous_id=({0: 0, 1: 1, 2: 2})
+    
+    print(self.metadata)
+
+    self.cpu_device = torch.device("cpu")
+    self.instance_mode = instance_mode
+    self.predictor = DefaultPredictor(cfg)
 
 class UmpireSignsPredictor(DefaultPredictor):
-    def __init__(self, cfg, instance_mode):
-        self.metadata = MetadataCatalog.get(
-            cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
-        )
-        self.metadata.thing_classes = ['umpire-signals', 'no-action', 'no-ball', 'out', 'six', 'wide']
-            self.metadata.thing_dataset_id_to_contiguous_id=({0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5})
-        print(self.metadata)
-        self.cpu_device = torch.device("cpu")
-        self.instance_mode = instance_mode
-        self.predictor = DefaultPredictor(cfg)
+  def __init__(self, cfg, instance_mode):
+    self.metadata = MetadataCatalog.get(
+        cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
+    )
+    self.metadata.thing_classes = ['umpire-signals', 'no-action', 'no-ball', 'out', 'six', 'wide']
+    self.metadata.thing_dataset_id_to_contiguous_id=({0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5})
+
+    print(self.metadata)
+
+    self.cpu_device = torch.device("cpu")
+    self.instance_mode = instance_mode
+    self.predictor = DefaultPredictor(cfg)
 
 
 """
