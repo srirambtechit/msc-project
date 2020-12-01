@@ -40,7 +40,7 @@ class VisualizationDemo(object):
             ndarray: BGR visualizations of each video frame.
         """
         # initializing VideoVisualizer based on the classifier selected at runtime
-        sngl_vid_vsulzr = VideoVisualizer(self.metadata, self.instance_mode)
+        sngl_vid_vsulzr = self.classifier.video_visualizer()
 
         if args.classifier == 'both':
             comb_vid_vsulzr = self.umpire_signs_classifier.video_visualizer()
