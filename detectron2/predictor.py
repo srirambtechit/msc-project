@@ -42,8 +42,8 @@ class VisualizationDemo(object):
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
             if "instances" in predictions:
               instances = predictions["instances"]
-              pred_classes = instances[ instances.pred_classes == 2]
-              print('Pred_classes',pred_classes)
+              value = instances[ instances.pred_classes == 2].pred_classes
+              print('Pred_classes', vlaue)
               predictions = instances.to(self.cpu_device)
               vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
 
