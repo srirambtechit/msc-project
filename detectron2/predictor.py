@@ -10,13 +10,12 @@ from detectron2.engine.defaults import DefaultPredictor
 from detectron2.utils.video_visualizer import VideoVisualizer
 from detectron2.utils.visualizer import ColorMode, Visualizer
 
-
 class VisualizationDemo(object):
     def __init__(self, args, m1_cfg, m2_cfg, instance_mode=ColorMode.IMAGE):
         if args.classifier == 'umpire-classifier':
-            self.umpire_classifier = UmpireClassifier(m1_cfg, instance_mode)
+            self.classifier = UmpireClassifier(m1_cfg, instance_mode)
         elif args.classifier == 'umpire-pose-classifier':
-            self.umpire_signs_classifier = UmpireSignsClassifier(m2_cfg, instance_mode)
+            self.classifier = UmpireSignsClassifier(m2_cfg, instance_mode)
         else:
             self.umpire_classifier = UmpireClassifier(m1_cfg, instance_mode)
             self.umpire_signs_classifier = UmpireSignsClassifier(m2_cfg, instance_mode)
@@ -28,30 +27,6 @@ class VisualizationDemo(object):
                 yield frame
             else:
                 break
-
-    def process_single_predictions(frame, predictions):
-        video_visualizer = VideoVisualizer(self.metadata, self.instance_mode)
-
-        def process_predictions(frame, predictions):
-            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            if "instances" in predictions:
-
-                # # getting all frames
-                # predictions = instances.to(self.cpu_device)
-                # vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
-                # # Converts Matplotlib RGB format to OpenCV BGR format
-                # vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
-
-                predictions = predictions["instances"].to(self.cpu_device)
-                vis_frame = video_visualizer.draw_instance_predictions(frame, predictions)
-
-            # Converts Matplotlib RGB format to OpenCV BGR format
-            vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
-            return vis_frame
-
-        frame_gen = self._frame_from_video(video)
-        for frame in frame_gen:
-            yield process_predictions(frame, self.predictor(frame))
             
     def run_on_video(self, video):
         """
@@ -64,7 +39,21 @@ class VisualizationDemo(object):
         Yields:
             ndarray: BGR visualizations of each video frame.
         """
-        video_visualizer = self.umpire_signs_classifier.video_visualizer()
+        # initializing VideoVisualizer based on the classifier selected at runtime
+        sngl_vid_vsulzr = VideoVisualizer(self.metadata, self.instance_mode)
+
+        if args.classifier == 'both':
+            comb_vid_vsulzr = self.umpire_signs_classifier.video_visualizer()
+
+        def process_single_predictions(frame, predictions):
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            if "instances" in predictions:
+                predictions = predictions["instances"].to(self.cpu_device)
+                vis_frame = sngl_vid_vsulzr.draw_instance_predictions(frame, predictions)
+
+            # Converts Matplotlib RGB format to OpenCV BGR format
+            vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
+            return vis_frame
 
         def process_combine_predictions(frame, predictions):
             vis_frame = None
@@ -74,12 +63,15 @@ class VisualizationDemo(object):
                 instances = predictions["instances"]
                 # only interested in frame classified as "umpire"
                 if 2 in instances.pred_classes:
-                    vis_frame = self.umpire_signs_classifier.predict_and_draw(frame, video_visualizer)
+                    vis_frame = self.umpire_signs_classifier.predict_and_draw(frame, comb_vid_vsulzr)
             return vis_frame
 
         frame_gen = self._frame_from_video(video)
         for frame in frame_gen:
-            yield process_combine_predictions(frame, self.umpire_classifier.predictor(frame))
+            if args.classifier == 'both':
+                yield process_combine_predictions(frame, self.umpire_classifier.predictor(frame))
+            else:
+                yield process_single_predictions(frame, self.classifier.predictor(frame))
 
 class UmpireClassifier(object):
     def __init__(self, cfg, instance_mode):
