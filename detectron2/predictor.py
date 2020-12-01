@@ -12,19 +12,17 @@ from detectron2.utils.visualizer import ColorMode, Visualizer
 
 class VisualizationDemo(object):
 
-    MODE = 'B'
-
     def __init__(self, args, m1_cfg, m2_cfg, instance_mode=ColorMode.IMAGE):
         if args.classifier == 'umpire-classifier':
             self.classifier = UmpireClassifier(m1_cfg, instance_mode)
-            MODE = 'A'        
+            self.MODE = 'A'        
         elif args.classifier == 'umpire-pose-classifier':
             self.classifier = UmpireSignsClassifier(m2_cfg, instance_mode)
-            MODE = 'A'
+            self.MODE = 'A'
         else:
             self.umpire_classifier = UmpireClassifier(m1_cfg, instance_mode)
             self.umpire_signs_classifier = UmpireSignsClassifier(m2_cfg, instance_mode)
-            MODE = 'B'
+            self.MODE = 'B'
 
     def _frame_from_video(self, video):
         while video.isOpened():
@@ -46,7 +44,7 @@ class VisualizationDemo(object):
             ndarray: BGR visualizations of each video frame.
         """
         # initializing VideoVisualizer based on the classifier selected at runtime
-        if MODE == 'B':
+        if self.MODE == 'B':
             comb_vid_vsulzr = self.umpire_signs_classifier.video_visualizer()
         else:
             sngl_vid_vsulzr = self.classifier.video_visualizer()
@@ -74,7 +72,7 @@ class VisualizationDemo(object):
 
         frame_gen = self._frame_from_video(video)
         for frame in frame_gen:
-            if MODE == 'B':
+            if self.MODE == 'B':
                 yield process_combine_predictions(frame, self.umpire_classifier.predictor(frame))
             else:
                 yield process_single_predictions(frame, self.classifier.predictor(frame))
