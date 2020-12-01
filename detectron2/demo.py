@@ -12,7 +12,7 @@ from detectron2.utils.logger import setup_logger
 
 from predictor import VisualizationDemo
 
-def setup_cfg(args):
+def setup_cfg(args, cfg_type):
     # load config from file and command-line arguments
     cfg = get_cfg()
     
@@ -31,9 +31,18 @@ def setup_cfg(args):
 
     cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 64
     # cfg.MODEL.ROI_HEADS.NUM_CLASSES = 7 #your number of classes + 1
-    # cfg.MODEL.ROI_HEADS.IOU_LABELS = [0,1,2,3,4,5,6]
 
     cfg.TEST.EVAL_PERIOD = 500
+
+    # loading default values when no classifier present or "both"
+    if args.classifier == 'both':
+        if cfg_type == 'm1':
+            cfg.MODEL.WEIGHTS="/content/models/model1/output/model_final.pth"
+            cfg.MODEL.ROI_HEADS.NUM_CLASSES=3
+
+        if cfg_type == 'm2':
+            cfg.MODEL.WEIGHTS="/content/models/model2/output/model_final.pth"
+            cfg.MODEL.ROI_HEADS.NUM_CLASSES=7
     # ---- adding my train configs END -------- #
 
     cfg.freeze()
@@ -63,6 +72,7 @@ def get_parser():
     )
     parser.add_argument(
         "--classifier",
+        defult="both",
         help="umpire-classifier or umpire-signs-classifier "
         "If not given, will throw an error.",
     )
@@ -89,9 +99,10 @@ if __name__ == "__main__":
     logger = setup_logger()
     logger.info("Arguments: " + str(args))
 
-    cfg = setup_cfg(args)
+    m1_cfg = setup_cfg(args, 'm1')
+    m2_cfg = setup_cfg(args, 'm2')
 
-    demo = VisualizationDemo(args, cfg)
+    demo = VisualizationDemo(args, m1_cfg, m2_cfg)
 
     if args.video_input:
         video = cv2.VideoCapture(args.video_input)

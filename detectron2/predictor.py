@@ -12,11 +12,15 @@ from detectron2.utils.visualizer import ColorMode, Visualizer
 
 
 class VisualizationDemo(object):
-    def __init__(self, args, cfg, instance_mode=ColorMode.IMAGE):
+    def __init__(self, args, m1_cfg, m2_cfg, instance_mode=ColorMode.IMAGE):
         if args.classifier == 'umpire-classifier':
-            self.umpire_classifier = UmpireClassifier(cfg, instance_mode)
+            self.umpire_classifier = UmpireClassifier(m1_cfg, instance_mode)
         elif args.classifier == 'umpire-pose-classifier':
-            self.umpire_signs_classifier = UmpireSignsClassifier(cfg, instance_mode)
+            self.umpire_signs_classifier = UmpireSignsClassifier(m2_cfg, instance_mode)
+        else:
+            self.umpire_classifier = UmpireClassifier(m1_cfg, instance_mode)
+            self.umpire_signs_classifier = UmpireSignsClassifier(m2_cfg, instance_mode)
+
         self.cpu_device = torch.device("cpu")
 
     def _frame_from_video(self, video):
