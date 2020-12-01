@@ -44,7 +44,7 @@ class VisualizationDemo(object):
           if "instances" in predictions:
             instances = predictions["instances"]
             value = instances[ instances.pred_classes == 2].pred_classes
-            print('Pred_classes', vlaue)
+            print('Pred_classes', value)
             predictions = instances.to(self.cpu_device)
             vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
 
