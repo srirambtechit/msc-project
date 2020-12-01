@@ -39,6 +39,7 @@ class VisualizationDemo(object):
         """
         def process_predictions(frame, predictions):
           frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+          vis_frame = None
           if "instances" in predictions:
             instances = predictions["instances"]
             pred_classes = instances[ instances.pred_classes == 2].pred_classes
@@ -48,8 +49,8 @@ class VisualizationDemo(object):
               predictions = instances.to(self.cpu_device)
               vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
 
-          # Converts Matplotlib RGB format to OpenCV BGR format
-          vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
+              # Converts Matplotlib RGB format to OpenCV BGR format
+              vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
           return vis_frame
 
         frame_gen = self._frame_from_video(video)
