@@ -108,7 +108,7 @@ if __name__ == "__main__":
 
     cfg = setup_cfg(args)
 
-    demo = VisualizationDemo(cfg)
+    demo = VisualizationDemo(args, cfg)
 
     if args.input:
         if len(args.input) == 1:
