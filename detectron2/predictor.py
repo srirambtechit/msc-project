@@ -37,15 +37,19 @@ class VisualizationDemo(object):
         Yields:
             ndarray: BGR visualizations of each video frame.
         """
+        def process_umpire_signs_predictions(frame, predictions):
+          pass
+
         def process_predictions(frame, predictions):
           frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
           vis_frame = None
           if "instances" in predictions:
             instances = predictions["instances"]
-            pred_classes = instances[ instances.pred_classes == 2].pred_classes
+            # pred_classes = instances[ instances.pred_classes == 2].pred_classes
+            pred_classes = instances.pred_classes
             # only interested in frame classified as "umpire"
             if 2 in pred_classes:
-              print('Pred_classes', pred_classes)
+              # print('Pred_classes', pred_classes)
               predictions = instances.to(self.cpu_device)
               vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
 
