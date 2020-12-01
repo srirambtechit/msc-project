@@ -24,6 +24,9 @@ class VisualizationDemo(object):
 
         self.metadata = classifier.metadata
         self.predictor = classifier.predictor
+        self.instance_mode = instance_mode
+        self.cpu_device = torch.device("cpu")
+
         # self.metadata = MetadataCatalog.get(
         #     cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
         # )
@@ -82,18 +85,7 @@ class UmpireClassifier(object):
     )
     self.metadata.thing_classes = ['isumpire', 'non-umpire', 'umpire' ]
     self.metadata.thing_dataset_id_to_contiguous_id=({0: 0, 1: 1, 2: 2})
-    
-    print(self.metadata)
-
-    self.cpu_device = torch.device("cpu")
-    self.instance_mode = instance_mode
     self.predictor = DefaultPredictor(cfg)
-
-  def metadata():
-    return self.metadata
-
-  def predictor():
-    return self.predictor
 
 class UmpireSignsClassifier(object):
   def __init__(self, cfg, instance_mode):
@@ -102,18 +94,7 @@ class UmpireSignsClassifier(object):
     )
     self.metadata.thing_classes = ['umpire-signals', 'no-action', 'no-ball', 'out', 'six', 'wide']
     self.metadata.thing_dataset_id_to_contiguous_id=({0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5})
-
-    print(self.metadata)
-
-    self.cpu_device = torch.device("cpu")
-    self.instance_mode = instance_mode
     self.predictor = DefaultPredictor(cfg)
-
-  def metadata():
-    return self.metadata
-
-  def predictor():
-    return self.predictor
 
 """
 sudo code:
