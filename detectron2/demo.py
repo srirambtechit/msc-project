@@ -97,6 +97,9 @@ if __name__ == "__main__":
     logger = setup_logger()
     logger.info("Arguments: " + str(args))
 
+    m1_cfg = None
+    m2_cfg = None
+
     if args.classifier == 'umpire-classifier':
         m1_cfg = setup_cfg(args, 'm1')
     elif args.classifier == 'umpire-pose-classifier':
