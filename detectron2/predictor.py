@@ -12,36 +12,12 @@ from detectron2.utils.visualizer import ColorMode, Visualizer
 
 class VisualizationDemo(object):
     def __init__(self, args, cfg, instance_mode=ColorMode.IMAGE):
-        """
-        Args:
-            cfg (CfgNode):
-            instance_mode (ColorMode):
-        """
         if args.classifier == 'umpire-classifier':
-          classifier = UmpireClassifier(cfg, instance_mode)
+          self.umpire_classifier = UmpireClassifier(cfg)
         elif args.classifier == 'umpire-pose-classifier':
-          classifier = UmpireSignsClassifier(cfg, instance_mode)
+          self.umpire_signs_classifier = UmpireSignsClassifier(cfg)
 
-        self.metadata = classifier.metadata
-        self.predictor = classifier.predictor
-        self.instance_mode = instance_mode
         self.cpu_device = torch.device("cpu")
-
-        # self.metadata = MetadataCatalog.get(
-        #     cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
-        # )
-
-        # if args.classifier == 'umpire-pose-classifier':
-        #     self.metadata.thing_classes = ['umpire-signals', 'no-action', 'no-ball', 'out', 'six', 'wide']
-        #     self.metadata.thing_dataset_id_to_contiguous_id=({0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5})
-        # elif args.classifier == 'umpire-classifier':
-        #     self.metadata.thing_classes = ['isumpire', 'non-umpire', 'umpire' ]
-        #     self.metadata.thing_dataset_id_to_contiguous_id=({0: 0, 1: 1, 2: 2})
-        # print(self.metadata)
-
-        # self.cpu_device = torch.device("cpu")
-        # self.instance_mode = instance_mode
-        # self.predictor = DefaultPredictor(cfg)
 
     def _frame_from_video(self, video):
         while video.isOpened():
@@ -62,13 +38,11 @@ class VisualizationDemo(object):
         Yields:
             ndarray: BGR visualizations of each video frame.
         """
-        video_visualizer = VideoVisualizer(self.metadata, self.instance_mode)
-
         def process_predictions(frame, predictions):
             frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
             if "instances" in predictions:
                 predictions = predictions["instances"].to(self.cpu_device)
-                vis_frame = video_visualizer.draw_instance_predictions(frame, predictions)
+                vis_frame = self.umpire_classifier.video_visualizer.draw_instance_predictions(frame, predictions)
 
             # Converts Matplotlib RGB format to OpenCV BGR format
             vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
@@ -76,7 +50,23 @@ class VisualizationDemo(object):
 
         frame_gen = self._frame_from_video(video)
         for frame in frame_gen:
-            yield process_predictions(frame, self.predictor(frame))
+            yield process_predictions(frame, self.umpire_classifier.predictor(frame))
+            
+        # video_visualizer = VideoVisualizer(self.metadata, self.instance_mode)
+
+        # def process_predictions(frame, predictions):
+        #     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        #     if "instances" in predictions:
+        #         predictions = predictions["instances"].to(self.cpu_device)
+        #         vis_frame = video_visualizer.draw_instance_predictions(frame, predictions)
+
+        #     # Converts Matplotlib RGB format to OpenCV BGR format
+        #     vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
+        #     return vis_frame
+
+        # frame_gen = self._frame_from_video(video)
+        # for frame in frame_gen:
+        #     yield process_predictions(frame, self.predictor(frame))
 
 class UmpireClassifier(object):
   def __init__(self, cfg, instance_mode):
@@ -86,15 +76,23 @@ class UmpireClassifier(object):
     self.metadata.thing_classes = ['isumpire', 'non-umpire', 'umpire' ]
     self.metadata.thing_dataset_id_to_contiguous_id=({0: 0, 1: 1, 2: 2})
     self.predictor = DefaultPredictor(cfg)
+    self.instance_mode = instance_mode
+
+  def video_visualizer():
+    return VideoVisualizer(self.metadata, self.instance_mode)
 
 class UmpireSignsClassifier(object):
-  def __init__(self, cfg, instance_mode):
+  def __init__(self, cfg):
     self.metadata = MetadataCatalog.get(
         cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
     )
     self.metadata.thing_classes = ['umpire-signals', 'no-action', 'no-ball', 'out', 'six', 'wide']
     self.metadata.thing_dataset_id_to_contiguous_id=({0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5})
     self.predictor = DefaultPredictor(cfg)
+    self.instance_mode = instance_mode
+
+  def video_visualizer():
+    return VideoVisualizer(self.metadata, self.instance_mode)
 
 """
 sudo code:
