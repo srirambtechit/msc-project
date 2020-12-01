@@ -42,14 +42,14 @@ class VisualizationDemo(object):
           if "instances" in predictions:
             instances = predictions["instances"]
             pred_classes = instances[ instances.pred_classes == 2].pred_classes
-            print('Pred_classes', pred_classes)
-            if torch.tensor([2]) in pred_classes:
+            # only interested in frame classified as "umpire"
+            if 2 in pred_classes:
+              print('Pred_classes', pred_classes)
               predictions = instances.to(self.cpu_device)
               vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
 
           # Converts Matplotlib RGB format to OpenCV BGR format
           vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
-
           return vis_frame
 
         frame_gen = self._frame_from_video(video)
