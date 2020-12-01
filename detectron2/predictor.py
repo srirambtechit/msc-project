@@ -61,9 +61,6 @@ class VisualizationDemo(object):
                     # predictions = instances.to(self.cpu_device)
                     # vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
                     vis_frame = self.umpire_signs_classifier.predict_and_draw(frame, video_visualizer)
-                    
-                    # Converts Matplotlib RGB format to OpenCV BGR format
-                    vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
             return vis_frame
 
         frame_gen = self._frame_from_video(video)
@@ -126,6 +123,9 @@ class UmpireSignsClassifier(object):
                 # print('Pred_classes', pred_classes)
                 predictions = instances.to(self.cpu_device)
                 vis_frame = viz.draw_instance_predictions(frame, predictions)
+                
+                # Converts Matplotlib RGB format to OpenCV BGR format
+                vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
                 return vis_frame
 
 """
