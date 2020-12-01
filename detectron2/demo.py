@@ -128,6 +128,7 @@ if __name__ == "__main__":
             )
         assert os.path.isfile(args.video_input)
         for vis_frame in tqdm.tqdm(demo.run_on_video(video), total=num_frames):
+            print(vis_frame)
             if args.output:
                 output_file.write(vis_frame)
             else:

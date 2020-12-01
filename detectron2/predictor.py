@@ -63,8 +63,7 @@ class VisualizationDemo(object):
                     vis_frame = self.umpire_signs_classifier.predict_and_draw(frame, video_visualizer)
                     
                     # Converts Matplotlib RGB format to OpenCV BGR format
-                    if vis_frame:
-                        vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
+                    vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
             return vis_frame
 
         frame_gen = self._frame_from_video(video)
@@ -87,7 +86,6 @@ class VisualizationDemo(object):
         # for frame in frame_gen:
         #     yield process_predictions(frame, self.predictor(frame))
 
-
 class UmpireClassifier(object):
     def __init__(self, cfg, instance_mode):
         self.metadata = MetadataCatalog.get(
@@ -100,7 +98,6 @@ class UmpireClassifier(object):
 
     def video_visualizer(self):
         return VideoVisualizer(self.metadata, self.instance_mode)
-
 
 class UmpireSignsClassifier(object):
     def __init__(self, cfg, instance_mode):
@@ -117,11 +114,11 @@ class UmpireSignsClassifier(object):
         return VideoVisualizer(self.metadata, self.instance_mode)
 
     def predict_and_draw(self, frame, viz):
+        # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         predictions = self.predictor(frame)
-
+        # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
         if "instances" in predictions:
             instances = predictions["instances"]
-
             # only interested in frame not classified as NO-ACTION
             # such as OUT, SIX, NO-BALL, WIDE
             print("M2-Pred", instances.pred_classes)
@@ -129,6 +126,7 @@ class UmpireSignsClassifier(object):
                 # print('Pred_classes', pred_classes)
                 predictions = instances.to(self.cpu_device)
                 vis_frame = viz.draw_instance_predictions(frame, predictions)
+                return vis_frame
 
 """
 sudo code:
