@@ -99,8 +99,13 @@ if __name__ == "__main__":
     logger = setup_logger()
     logger.info("Arguments: " + str(args))
 
-    m1_cfg = setup_cfg(args, 'm1')
-    m2_cfg = setup_cfg(args, 'm2')
+    if args.classifier == 'umpire-classifier':
+        m1_cfg = setup_cfg(args, 'm1')
+    elif args.classifier == 'umpire-pose-classifier':
+        m2_cfg = setup_cfg(args, 'm2')
+    else:
+        m1_cfg = setup_cfg(args, 'm1')
+        m2_cfg = setup_cfg(args, 'm2')
 
     demo = VisualizationDemo(args, m1_cfg, m2_cfg)
 
