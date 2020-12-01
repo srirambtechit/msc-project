@@ -12,42 +12,6 @@ from detectron2.utils.logger import setup_logger
 
 from predictor import VisualizationDemo
 
-def setup_cfg(args, cfg_type):
-    # load config from file and command-line arguments
-    cfg = get_cfg()
-    
-    cfg.merge_from_file(args.config_file)
-    cfg.merge_from_list(args.opts)
-    # Set score_threshold for builtin models
-    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = args.confidence_threshold
-
-    # ---- adding my train configs START -------- #
-    cfg.SOLVER.WARMUP_ITERS = 1000
-    # cfg.SOLVER.MAX_ITER = 1500 #adjust up if val mAP is still rising, adjust down if overfit
-    cfg.SOLVER.STEPS = (1000, 1500)
-    cfg.SOLVER.GAMMA = 0.05
-
-    cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 64
-    # cfg.MODEL.ROI_HEADS.NUM_CLASSES = 7 #your number of classes + 1
-
-    cfg.TEST.EVAL_PERIOD = 500
-
-    # loading default values when no classifier present or "both"
-    if args.classifier == 'both':
-        if cfg_type == 'm1':
-            cfg.MODEL.ROI_HEADS.NUM_CLASSES=3
-            cfg.DATASETS.TEST = ("umpire_dataset_val",)
-            cfg.MODEL.WEIGHTS="/content/models/model1/output/model_final.pth"
-
-        if cfg_type == 'm2':
-            cfg.MODEL.ROI_HEADS.NUM_CLASSES=7
-            cfg.DATASETS.TEST = ("umpire_signs_dataset_val",)
-            cfg.MODEL.WEIGHTS="/content/models/model2/output/model_final.pth"
-    # ---- adding my train configs END -------- #
-
-    cfg.freeze()
-    return cfg
-
 
 def get_parser():
     parser = argparse.ArgumentParser(description="Detectron2 demo for builtin configs")
@@ -91,6 +55,40 @@ def get_parser():
     )
     return parser
 
+def setup_cfg(args, cfg_type):
+    # create fresh Config object
+    cfg = get_cfg()
+    
+    cfg.merge_from_file(args.config_file)
+    cfg.merge_from_list(args.opts)
+    # Set score_threshold for builtin models
+    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = args.confidence_threshold
+
+    # ---- ADD CUSTOM PARAM VALUES START -------- #
+    cfg.SOLVER.WARMUP_ITERS = 1000
+    # cfg.SOLVER.MAX_ITER = 1500 #adjust up if val mAP is still rising, adjust down if overfit
+    cfg.SOLVER.STEPS = (1000, 1500)
+    cfg.SOLVER.GAMMA = 0.05
+
+    cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 64
+    # cfg.MODEL.ROI_HEADS.NUM_CLASSES = 7 #your number of classes + 1
+
+    cfg.TEST.EVAL_PERIOD = 500
+
+    # loading default values when no classifier present or "both"
+    if args.classifier == 'both':
+        if cfg_type == 'm1':
+            cfg.MODEL.ROI_HEADS.NUM_CLASSES = 3
+            cfg.DATASETS.TEST = ("umpire_dataset_val",)
+            cfg.MODEL.WEIGHTS = "/content/models/model1/output/model_final.pth"
+        elif cfg_type == 'm2':
+            cfg.MODEL.ROI_HEADS.NUM_CLASSES = 7
+            cfg.DATASETS.TEST = ("umpire_signs_dataset_val",)
+            cfg.MODEL.WEIGHTS = "/content/models/model2/output/model_final.pth"
+    # ---- ADD CUSTOM PARAM VALUES END -------- #
+
+    cfg.freeze()
+    return cfg
 
 if __name__ == "__main__":
     mp.set_start_method("spawn", force=True)
@@ -106,6 +104,9 @@ if __name__ == "__main__":
     else:
         m1_cfg = setup_cfg(args, 'm1')
         m2_cfg = setup_cfg(args, 'm2')
+    
+    print('m1_cfg', m1_cfg)
+    print('m2_cfg', m2_cfg)
 
     demo = VisualizationDemo(args, m1_cfg, m2_cfg)
 

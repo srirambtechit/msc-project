@@ -15,10 +15,10 @@ class VisualizationDemo(object):
     def __init__(self, args, m1_cfg, m2_cfg, instance_mode=ColorMode.IMAGE):
         if args.classifier == 'umpire-classifier':
             self.classifier = UmpireClassifier(m1_cfg, instance_mode)
-            self.MODE = 'A'        
+            self.MODE = 'UC'
         elif args.classifier == 'umpire-pose-classifier':
             self.classifier = UmpireSignsClassifier(m2_cfg, instance_mode)
-            self.MODE = 'A'
+            self.MODE = 'UPC'
         else:
             self.umpire_classifier = UmpireClassifier(m1_cfg, instance_mode)
             self.umpire_signs_classifier = UmpireSignsClassifier(m2_cfg, instance_mode)
@@ -79,6 +79,7 @@ class VisualizationDemo(object):
 
 class UmpireClassifier(object):
     def __init__(self, cfg, instance_mode):
+        assert cfg is not None, "UmpireClassifier's config cannot be None"
         self.metadata = MetadataCatalog.get(
             cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
         )
@@ -92,6 +93,7 @@ class UmpireClassifier(object):
 
 class UmpireSignsClassifier(object):
     def __init__(self, cfg, instance_mode):
+        assert cfg is not None, "UmpireSignsClassifier's config cannot be None"
         self.metadata = MetadataCatalog.get(
             cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
         )
