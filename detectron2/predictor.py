@@ -22,8 +22,8 @@ class VisualizationDemo(object):
         elif args.classifier == 'umpire-pose-classifier':
           classifier = UmpireSignsClassifier(cfg, instance_mode)
 
-        self.metadata = classifier.metadata()
-        self.predictor = classifier.predictor()  
+        self.metadata = classifier.metadata
+        self.predictor = classifier.predictor
         # self.metadata = MetadataCatalog.get(
         #     cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
         # )
