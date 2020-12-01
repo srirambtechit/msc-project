@@ -29,6 +29,30 @@ class VisualizationDemo(object):
             else:
                 break
 
+    def process_single_predictions(frame, predictions):
+        video_visualizer = VideoVisualizer(self.metadata, self.instance_mode)
+
+        def process_predictions(frame, predictions):
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            if "instances" in predictions:
+
+                # # getting all frames
+                # predictions = instances.to(self.cpu_device)
+                # vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
+                # # Converts Matplotlib RGB format to OpenCV BGR format
+                # vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
+
+                predictions = predictions["instances"].to(self.cpu_device)
+                vis_frame = video_visualizer.draw_instance_predictions(frame, predictions)
+
+            # Converts Matplotlib RGB format to OpenCV BGR format
+            vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
+            return vis_frame
+
+        frame_gen = self._frame_from_video(video)
+        for frame in frame_gen:
+            yield process_predictions(frame, self.predictor(frame))
+            
     def run_on_video(self, video):
         """
         Visualizes predictions on frames of the input video.
@@ -40,48 +64,22 @@ class VisualizationDemo(object):
         Yields:
             ndarray: BGR visualizations of each video frame.
         """
-        def process_predictions(frame, predictions):
-            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            vis_frame = None
-            video_visualizer = self.umpire_signs_classifier.video_visualizer()
+        video_visualizer = self.umpire_signs_classifier.video_visualizer()
 
+        def process_combine_predictions(frame, predictions):
+            vis_frame = None
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            
             if "instances" in predictions:
                 instances = predictions["instances"]
-
-                # # getting all frames
-                # predictions = instances.to(self.cpu_device)
-                # vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
-                # # Converts Matplotlib RGB format to OpenCV BGR format
-                # vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
-
                 # only interested in frame classified as "umpire"
-                print("M1-Pred", instances.pred_classes)
                 if 2 in instances.pred_classes:
-                    # print('Pred_classes', pred_classes)
-                    # predictions = instances.to(self.cpu_device)
-                    # vis_frame = self.umpire_classifier.video_visualizer().draw_instance_predictions(frame, predictions)
                     vis_frame = self.umpire_signs_classifier.predict_and_draw(frame, video_visualizer)
             return vis_frame
 
         frame_gen = self._frame_from_video(video)
         for frame in frame_gen:
-            yield process_predictions(frame, self.umpire_classifier.predictor(frame))
-
-        # video_visualizer = VideoVisualizer(self.metadata, self.instance_mode)
-
-        # def process_predictions(frame, predictions):
-        #     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        #     if "instances" in predictions:
-        #         predictions = predictions["instances"].to(self.cpu_device)
-        #         vis_frame = video_visualizer.draw_instance_predictions(frame, predictions)
-
-        #     # Converts Matplotlib RGB format to OpenCV BGR format
-        #     vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
-        #     return vis_frame
-
-        # frame_gen = self._frame_from_video(video)
-        # for frame in frame_gen:
-        #     yield process_predictions(frame, self.predictor(frame))
+            yield process_combine_predictions(frame, self.umpire_classifier.predictor(frame))
 
 class UmpireClassifier(object):
     def __init__(self, cfg, instance_mode):
@@ -111,19 +109,15 @@ class UmpireSignsClassifier(object):
         return VideoVisualizer(self.metadata, self.instance_mode)
 
     def predict_and_draw(self, frame, viz):
-        # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         predictions = self.predictor(frame)
-        # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
         if "instances" in predictions:
             instances = predictions["instances"]
             # only interested in frame not classified as NO-ACTION
             # such as OUT, SIX, NO-BALL, WIDE
-            print("M2-Pred", instances.pred_classes)
             if 1 not in instances.pred_classes:
-                # print('Pred_classes', pred_classes)
                 predictions = instances.to(self.cpu_device)
                 vis_frame = viz.draw_instance_predictions(frame, predictions)
-                
+
                 # Converts Matplotlib RGB format to OpenCV BGR format
                 vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
                 return vis_frame
