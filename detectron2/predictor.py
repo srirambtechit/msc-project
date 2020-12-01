@@ -78,7 +78,7 @@ class UmpireClassifier(object):
     self.predictor = DefaultPredictor(cfg)
     self.instance_mode = instance_mode
 
-  def video_visualizer():
+  def video_visualizer(self):
     return VideoVisualizer(self.metadata, self.instance_mode)
 
 class UmpireSignsClassifier(object):
@@ -91,7 +91,7 @@ class UmpireSignsClassifier(object):
     self.predictor = DefaultPredictor(cfg)
     self.instance_mode = instance_mode
 
-  def video_visualizer():
+  def video_visualizer(self):
     return VideoVisualizer(self.metadata, self.instance_mode)
 
 """
