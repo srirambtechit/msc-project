@@ -38,6 +38,8 @@ class VisualizationDemo(object):
         Yields:
             ndarray: BGR visualizations of each video frame.
         """
+        global stop_at = 5
+        
         def process_predictions(frame, predictions):
           frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
           if "instances" in predictions:
@@ -55,7 +57,7 @@ class VisualizationDemo(object):
 
           return vis_frame
 
-        stop_at = 5
+        
 
         frame_gen = self._frame_from_video(video)
         for frame in frame_gen:
