@@ -18,10 +18,12 @@ class VisualizationDemo(object):
             instance_mode (ColorMode):
         """
         if args.classifier == 'umpire-classifier':
-          self.predictor = UmpirePredictor(cfg, instance_mode)
+          classifier = UmpireClassifier(cfg, instance_mode)
         elif args.classifier == 'umpire-pose-classifier':
-          self.predictor = UmpireSignsPredictor(cfg, instance_mode)
+          classifier = UmpireSignsClassifier(cfg, instance_mode)
 
+        self.metadata = classifier.metadata()
+        self.predictor = classifier.predictor()  
         # self.metadata = MetadataCatalog.get(
         #     cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
         # )
@@ -73,7 +75,7 @@ class VisualizationDemo(object):
         for frame in frame_gen:
             yield process_predictions(frame, self.predictor(frame))
 
-class UmpirePredictor(DefaultPredictor):
+class UmpireClassifier(object):
   def __init__(self, cfg, instance_mode):
     self.metadata = MetadataCatalog.get(
         cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
@@ -87,7 +89,13 @@ class UmpirePredictor(DefaultPredictor):
     self.instance_mode = instance_mode
     self.predictor = DefaultPredictor(cfg)
 
-class UmpireSignsPredictor(DefaultPredictor):
+  def metadata():
+    return self.metadata
+
+  def predictor():
+    return self.predictor
+
+class UmpireSignsClassifier(object):
   def __init__(self, cfg, instance_mode):
     self.metadata = MetadataCatalog.get(
         cfg.DATASETS.TEST[0] if len(cfg.DATASETS.TEST) else "__unused"
@@ -101,6 +109,11 @@ class UmpireSignsPredictor(DefaultPredictor):
     self.instance_mode = instance_mode
     self.predictor = DefaultPredictor(cfg)
 
+  def metadata():
+    return self.metadata
+
+  def predictor():
+    return self.predictor
 
 """
 sudo code:
