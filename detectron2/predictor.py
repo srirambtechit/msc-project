@@ -21,8 +21,6 @@ class VisualizationDemo(object):
             self.umpire_classifier = UmpireClassifier(m1_cfg, instance_mode)
             self.umpire_signs_classifier = UmpireSignsClassifier(m2_cfg, instance_mode)
 
-        self.cpu_device = torch.device("cpu")
-
     def _frame_from_video(self, video):
         while video.isOpened():
             success, frame = video.read()
@@ -111,6 +109,7 @@ class UmpireSignsClassifier(object):
         self.metadata.thing_dataset_id_to_contiguous_id = ({0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5})
         self.predictor = DefaultPredictor(cfg)
         self.instance_mode = instance_mode
+        self.cpu_device = torch.device("cpu")
 
     def video_visualizer(self):
         return VideoVisualizer(self.metadata, self.instance_mode)
