@@ -65,6 +65,8 @@ def setup_cfg(args, cfg_type):
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = args.confidence_threshold
 
     # ---- ADD CUSTOM PARAM VALUES START -------- #
+    cfg.DATASETS.TEST = ("common_dataset_val",)
+
     cfg.SOLVER.WARMUP_ITERS = 1000
     # cfg.SOLVER.MAX_ITER = 1500 #adjust up if val mAP is still rising, adjust down if overfit
     cfg.SOLVER.STEPS = (1000, 1500)
