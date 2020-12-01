@@ -22,8 +22,6 @@ def setup_cfg(args, cfg_type):
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = args.confidence_threshold
 
     # ---- adding my train configs START -------- #
-    cfg.DATASETS.TEST = ("my_dataset_val",)
-
     cfg.SOLVER.WARMUP_ITERS = 1000
     # cfg.SOLVER.MAX_ITER = 1500 #adjust up if val mAP is still rising, adjust down if overfit
     cfg.SOLVER.STEPS = (1000, 1500)
@@ -37,12 +35,14 @@ def setup_cfg(args, cfg_type):
     # loading default values when no classifier present or "both"
     if args.classifier == 'both':
         if cfg_type == 'm1':
-            cfg.MODEL.WEIGHTS="/content/models/model1/output/model_final.pth"
             cfg.MODEL.ROI_HEADS.NUM_CLASSES=3
+            cfg.DATASETS.TEST = ("umpire_dataset_val",)
+            cfg.MODEL.WEIGHTS="/content/models/model1/output/model_final.pth"
 
         if cfg_type == 'm2':
-            cfg.MODEL.WEIGHTS="/content/models/model2/output/model_final.pth"
             cfg.MODEL.ROI_HEADS.NUM_CLASSES=7
+            cfg.DATASETS.TEST = ("umpire_signs_dataset_val",)
+            cfg.MODEL.WEIGHTS="/content/models/model2/output/model_final.pth"
     # ---- adding my train configs END -------- #
 
     cfg.freeze()
