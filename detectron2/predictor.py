@@ -115,7 +115,7 @@ class UmpireSignsClassifier(object):
     def video_visualizer(self):
         return VideoVisualizer(self.metadata, self.instance_mode)
 
-    def predict_and_draw(frame, viz):
+    def predict_and_draw(self, frame, viz):
         predictions = self.predictor(frame)
 
         if "instances" in predictions:
