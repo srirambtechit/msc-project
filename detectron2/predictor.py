@@ -18,6 +18,7 @@ class VisualizationDemo(object):
           self.umpire_signs_classifier = UmpireSignsClassifier(cfg, instance_mode)
 
         self.cpu_device = torch.device("cpu")
+        self.debug_var = 0
 
     def _frame_from_video(self, video):
         while video.isOpened():
@@ -38,8 +39,6 @@ class VisualizationDemo(object):
         Yields:
             ndarray: BGR visualizations of each video frame.
         """
-        global stop_at
-
         def process_predictions(frame, predictions):
           frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
           if "instances" in predictions:
@@ -51,13 +50,10 @@ class VisualizationDemo(object):
 
           # Converts Matplotlib RGB format to OpenCV BGR format
           vis_frame = cv2.cvtColor(vis_frame.get_image(), cv2.COLOR_RGB2BGR)
-          if stop_at == 5:
+          if self.debug_var == 5:
             return vis_frame
-          stop_at += 1
-
+          self.debug_var += 1
           return vis_frame
-
-        
 
         frame_gen = self._frame_from_video(video)
         for frame in frame_gen:
