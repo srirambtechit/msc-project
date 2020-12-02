@@ -1,4 +1,45 @@
 # msc-project
+# 
+
+### Structure of this project:
+
+### Metrics for Umpire/Nonumpire detection model
+- Training
+  - model was trained with 951 images
+  - data split as shown in image ![image](./metrics/m1_train_samples.png)
+- Validation
+  - model was trained with 90 images
+  - data split as shown in image ![image](./metrics/m1_validation_samples.png)
+- Test
+  - model was trained with 45 images
+  - data split as shown in image ![image](./metrics/m1_test_samples.png)
+- Model Evaluation
+  - After 1000 iteration, AP, AR as shown below
+    ![evaluation](./metrics/m1_1000th_iteration_eval_result.png)
+  - After 1500 iteration, AP, AR as shown below
+    ![evaluation](./metrics/m1_1500th_iteration_eval_result.png)
+  - Final evaluation based on the test data, AP, AR as shown below
+    ![evaluation](./metrics/m1_eval_result.png)
+
+
+### Metrics for Umpire signs/pose (SIX, NO-BALL, OUT, WIDE) detection model
+- Training
+  - model was trained with 998 images
+  - data split as shown in image ![image](./metrics/m2_train_samples.png)
+- Validation
+  - model was trained with 88 images
+  - data split as shown in image ![image](./metrics/m2_validation_samples.png)
+- Test
+  - model was trained with 44 images
+  - data split as shown in image ![image](./metrics/m2_test_samples.png)
+- Model Evaluation
+  - After 1000 iteration, AP, AR as shown below
+    ![evaluation](./metrics/m2_1000th_iteration_eval_result.png)
+  - After 1500 iteration, AP, AR as shown below
+    ![evaluation](./metrics/m2_1500th_iteration_eval_result.png)
+  - Final evaluation based on the test data, AP, AR as shown below
+    ![evaluation](./metrics/m2_eval_result.png)
+
 
 ### Interpreting detectron2 prediction result
 ![Predicted image](./output/predicted_image.png)
@@ -28,7 +69,7 @@ Metadata(name='my_dataset_test',
       )
 ```
 
-### Classifier models
+### Classifier and its lables
 #### umpire detection classifier
 **model1-labels**
 - isumpire (0)
