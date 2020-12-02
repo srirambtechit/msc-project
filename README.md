@@ -24,7 +24,7 @@
 
 ### Metrics for Umpire signs/pose (SIX, NO-BALL, OUT, WIDE) detection model
 - Training
-  - model was trained with 998 images
+  - model was trained with 930 images
   - data split as shown in image ![image](./metrics/m2_train_samples.png)
 - Validation
   - model was trained with 88 images
