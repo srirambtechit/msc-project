@@ -8,17 +8,17 @@
   - model was trained with 951 images
   - data split as shown in image ![image](./metrics/m1_train_samples.png)
 - Validation
-  - model was trained with 90 images
+  - model was validated against 90 images
   - data split as shown in image ![image](./metrics/m1_validation_samples.png)
 - Test
-  - model was trained with 45 images
+  - model was tested against 45 images
   - data split as shown in image ![image](./metrics/m1_test_samples.png)
 - Model Evaluation
-  - After 1000 iteration, AP, AR as shown below
+  - After 1000 iteration, AP as shown below
     ![evaluation](./metrics/m1_1000th_iteration_eval_result.png)
-  - After 1500 iteration, AP, AR as shown below
+  - After 1500 iteration, AP as shown below
     ![evaluation](./metrics/m1_1500th_iteration_eval_result.png)
-  - Final evaluation based on the test data, AP, AR as shown below
+  - Final evaluation based on the test data, AP as shown below
     ![evaluation](./metrics/m1_eval_result.png)
 
 
@@ -27,17 +27,17 @@
   - model was trained with 930 images
   - data split as shown in image ![image](./metrics/m2_train_samples.png)
 - Validation
-  - model was trained with 88 images
+  - model was validated against 88 images
   - data split as shown in image ![image](./metrics/m2_validation_samples.png)
 - Test
-  - model was trained with 44 images
+  - model was tested against 44 images
   - data split as shown in image ![image](./metrics/m2_test_samples.png)
 - Model Evaluation
-  - After 1000 iteration, AP, AR as shown below
+  - After 1000 iteration, AP as shown below
     ![evaluation](./metrics/m2_1000th_iteration_eval_result.png)
-  - After 1500 iteration, AP, AR as shown below
+  - After 1500 iteration, AP as shown below
     ![evaluation](./metrics/m2_1500th_iteration_eval_result.png)
-  - Final evaluation based on the test data, AP, AR as shown below
+  - Final evaluation based on the test data, AP as shown below
     ![evaluation](./metrics/m2_eval_result.png)
 
 
@@ -56,8 +56,7 @@
           [301.9677,  33.7873, 408.4108, 380.9571]
         ], device='cuda:0')),
         scores: tensor([0.9685, 0.9662], device='cuda:0'), 
-        pred_classes: tensor([3, 1], device='cuda:0')
-    ]
+        pred_classes: tensor([3, 1], device='cuda:0') ]
   )
 }
 ```
